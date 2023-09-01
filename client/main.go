@@ -32,7 +32,7 @@ func startClient(stopChan chan bool) {
 	clientCtx, clientCancel = context.WithCancel(context.Background())
 	defer clientCancel()
 
-	conn, err := net.Dial("tcp", "localhost:9909")
+	conn, err := net.Dial("tcp", Host+":"+Port)
 	if err != nil {
 		fmt.Println("Error connecting to server:", err)
 		return

@@ -12,11 +12,11 @@ func main() {
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
-		client.Start("12333", "http://127.0.0.1:19000/api/toast")
+		client.Start("127.0.0.1", "9919", "12333", "http://127.0.0.1:19000/api/toast")
 	}()
 	go func() {
 		defer wg.Done()
-		server.Start("localhost:9919", "12333", "111", "9919")
+		server.Start("9919", "12333", "111", "9919")
 	}()
 	wg.Wait()
 }
