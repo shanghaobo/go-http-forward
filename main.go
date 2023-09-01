@@ -16,7 +16,7 @@ func main() {
 	}()
 	go func() {
 		defer wg.Done()
-		server.Start("12333", "111", "9919")
+		server.Start("localhost:9919", "12333", "111", "9919")
 	}()
 	wg.Wait()
 }

@@ -52,7 +52,7 @@ func handleConnection(conn net.Conn) {
 }
 
 func startServer() {
-	listen, err := net.Listen("tcp", "localhost:9909")
+	listen, err := net.Listen("tcp", Addr)
 	if err != nil {
 		fmt.Println("Error listening:", err)
 		return
