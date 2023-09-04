@@ -12,6 +12,7 @@ type MsgHandleType struct {
 	JsonData   MessageType
 	ReaderChan chan []byte
 	WriterChan chan []byte
+	CancelFunc context.CancelFunc
 }
 
 func WriteMessage(writerChan chan []byte, conn net.Conn, ctx context.Context) {
@@ -26,6 +27,7 @@ func WriteMessage(writerChan chan []byte, conn net.Conn, ctx context.Context) {
 				return
 			}
 		case <-ctx.Done():
+			conn.Close()
 			return
 
 		}

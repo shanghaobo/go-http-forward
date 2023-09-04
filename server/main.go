@@ -24,15 +24,16 @@ func handleConnection(conn net.Conn) {
 	writerChan := make(chan []byte)
 	handleChan := make(chan utils.MsgHandleType)
 
+	ctx, cancel := context.WithCancel(context.Background())
+
 	msgHandle := utils.MsgHandleType{
 		Conn:       conn,
 		ReaderChan: readerChan,
 		WriterChan: writerChan,
+		CancelFunc: cancel,
 	}
 
 	clients[conn] = msgHandle
-
-	ctx, cancel := context.WithCancel(context.Background())
 
 	go utils.ReaderMessage(handleChan, msgHandle, ctx)
 	go utils.WriteMessage(writerChan, conn, ctx)

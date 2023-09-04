@@ -30,7 +30,7 @@ func HandleMessage(handleChan chan utils.MsgHandleType) {
 			fmt.Println("jsonData=", msgHandle.JsonData)
 			switch msgHandle.JsonData.Type {
 			case utils.MessageRegister:
-				handleRegister(msgHandle.JsonData, msgHandle.WriterChan)
+				handleRegister(msgHandle)
 			case utils.MessageHeart:
 				handleHeart(msgHandle)
 			case utils.MessageHttpForward:
@@ -42,20 +42,20 @@ func HandleMessage(handleChan chan utils.MsgHandleType) {
 
 }
 
-func handleRegister(jsonData utils.MessageType, writerChan chan []byte) {
+func handleRegister(msgHandle utils.MsgHandleType) {
 	var msgData utils.MessageRegisterReqType
-	err := json.Unmarshal(jsonData.Data, &msgData)
+	err := json.Unmarshal(msgHandle.JsonData.Data, &msgData)
 	if err != nil {
 		fmt.Println("data解析失败")
 		return
 	}
 	fmt.Println("msgData.Token=", msgData.Token)
 	if msgData.Token != Token {
-		writerChan <- []byte(`{"type":"register", "data":{"success": false}}`)
-		writerChan <- []byte("close")
+		msgHandle.WriterChan <- []byte(`{"type":"register", "data":{"success": false}}`)
+		msgHandle.CancelFunc()
 		return
 	}
-	writerChan <- []byte(`{"type":"register", "data":{"success": true}}`)
+	msgHandle.WriterChan <- []byte(`{"type":"register", "data":{"success": true}}`)
 }
 
 func handleHeart(msgHandle utils.MsgHandleType) {

@@ -47,6 +47,7 @@ func startClient(stopChan chan bool) {
 		Conn:       conn,
 		ReaderChan: readerChan,
 		WriterChan: writerChan,
+		CancelFunc: clientCancel,
 	}
 
 	readMainWg := sync.WaitGroup{}
