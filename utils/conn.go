@@ -3,7 +3,7 @@ package utils
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net"
 )
 
@@ -19,11 +19,11 @@ func WriteMessage(writerChan chan []byte, conn net.Conn, ctx context.Context) {
 	for {
 		select {
 		case msg := <-writerChan:
-			fmt.Println("write msg=", string(msg))
+			log.Println("write msg=", string(msg))
 			msgData := Enpack(msg)
 			_, err := conn.Write(msgData)
 			if err != nil {
-				fmt.Println("write err, msg=", msg, "err=", err)
+				log.Println("write err, msg=", msg, "err=", err)
 				return
 			}
 		case <-ctx.Done():
@@ -38,11 +38,11 @@ func ReaderMessage(handleChan chan MsgHandleType, msgHandle MsgHandleType, ctx c
 	for {
 		select {
 		case msg := <-msgHandle.ReaderChan:
-			fmt.Println("read msg=", string(msg))
+			log.Println("read msg=", string(msg))
 			var jsonData MessageType
 			err := json.Unmarshal(msg, &jsonData)
 			if err != nil {
-				fmt.Println("data解析失败")
+				log.Println("data解析失败")
 			}
 			msgHandle.JsonData = jsonData
 			handleChan <- msgHandle

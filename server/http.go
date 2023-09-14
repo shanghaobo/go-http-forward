@@ -1,8 +1,8 @@
 package server
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -13,12 +13,12 @@ func forwardHandle(c *gin.Context) {
 	queryParams := c.Request.URL.Query()
 	for key, values := range queryParams {
 		for _, value := range values {
-			fmt.Println("c=", key, value)
+			log.Println("c=", key, value)
 			forwardParams.Set(key, value)
 		}
 	}
 	apiToken := forwardParams.Get("token")
-	fmt.Println("apiToken=", apiToken)
+	log.Println("apiToken=", apiToken)
 	if apiToken != ApiToken {
 		c.JSON(http.StatusOK, gin.H{
 			"success": "false",
@@ -48,7 +48,7 @@ func forwardHandle(c *gin.Context) {
 	forwardRes[uuid_] = ForwardResPending
 	forwardResLock.Unlock()
 	for i := 0; i < 10; i++ {
-		fmt.Println("forwardRes[uuid_]=", uuid_, forwardRes[uuid_])
+		log.Println("forwardRes[uuid_]=", uuid_, forwardRes[uuid_])
 		if forwardRes[uuid_] != ForwardResPending {
 			if forwardRes[uuid_] == ForwardResSuccess {
 				c.JSON(http.StatusOK, gin.H{

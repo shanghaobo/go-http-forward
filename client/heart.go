@@ -1,8 +1,8 @@
 package client
 
 import (
-	"fmt"
 	"github.com/shanghaobo/go-http-forward/utils"
+	"log"
 	"time"
 )
 
@@ -24,15 +24,15 @@ func startHeart(msgHandle utils.MsgHandleType) {
 	for {
 		select {
 		case <-clientCtx.Done():
-			fmt.Println("停止心跳程序")
+			log.Println("停止心跳程序")
 			return
 		case <-ticker.C:
-			fmt.Println("time.Now().Sub(lastHeartRespTime)=", time.Now().Sub(lastHeartRespTime))
+			log.Println("time.Now().Sub(lastHeartRespTime)=", time.Now().Sub(lastHeartRespTime))
 			if time.Now().Sub(lastHeartRespTime) > HeartTimeout {
 				//经过三次心跳连接未收到回复，重连
-				fmt.Println("心跳超时，准备重连")
+				log.Println("心跳超时，准备重连")
 				restartConnChan <- true
-				fmt.Println("haha")
+				log.Println("haha")
 				return
 			}
 			msgHandle.WriterChan <- heartMsg

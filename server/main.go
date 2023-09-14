@@ -2,8 +2,8 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"github.com/shanghaobo/go-http-forward/utils"
+	"log"
 	"net"
 )
 
@@ -17,7 +17,7 @@ func createMessage(message string) {
 
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
-	fmt.Println("handleConnection:", conn.RemoteAddr())
+	log.Println("handleConnection:", conn.RemoteAddr())
 
 	tmpBuffer := make([]byte, 0)
 	readerChan := make(chan []byte, 16)
@@ -44,7 +44,7 @@ func handleConnection(conn net.Conn) {
 	for {
 		n, err := conn.Read(buffer)
 		if err != nil {
-			fmt.Println("Client disconnected:", conn.RemoteAddr())
+			log.Println("Client disconnected:", conn.RemoteAddr())
 			delete(clients, conn)
 			return
 		}
@@ -55,16 +55,16 @@ func handleConnection(conn net.Conn) {
 func startServer() {
 	listen, err := net.Listen("tcp", "0.0.0.0:"+Port)
 	if err != nil {
-		fmt.Println("Error listening:", err)
+		log.Println("Error listening:", err)
 		return
 	}
 	defer listen.Close()
-	fmt.Println("Server started, waiting for connections")
+	log.Println("Server started, waiting for connections")
 
 	for {
 		conn, err := listen.Accept()
 		if err != nil {
-			fmt.Println("Error accepting connection:", err)
+			log.Println("Error accepting connection:", err)
 			continue
 		}
 		go handleConnection(conn)

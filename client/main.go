@@ -2,8 +2,8 @@ package client
 
 import (
 	"context"
-	"fmt"
 	"github.com/shanghaobo/go-http-forward/utils"
+	"log"
 	"net"
 	"sync"
 	"time"
@@ -20,7 +20,7 @@ func readConnMain(conn net.Conn, readerChan chan []byte) {
 	for {
 		n, err := conn.Read(buffer)
 		if err != nil {
-			fmt.Println("Client disconnected:", conn.RemoteAddr())
+			log.Println("Client disconnected:", conn.RemoteAddr())
 			//stopChan <- true
 			return
 		}
@@ -34,7 +34,7 @@ func startClient(stopChan chan bool) {
 
 	conn, err := net.Dial("tcp", Host+":"+Port)
 	if err != nil {
-		fmt.Println("Error connecting to server:", err)
+		log.Println("Error connecting to server:", err)
 		return
 	}
 	defer conn.Close()
@@ -54,26 +54,26 @@ func startClient(stopChan chan bool) {
 	readMainWg.Add(1)
 
 	go func() {
-		defer fmt.Println("ReadConnMain end")
+		defer log.Println("ReadConnMain end")
 		defer readMainWg.Done()
 		readConnMain(conn, readerChan)
 	}()
 	go func() {
-		defer fmt.Println("ReaderMessage end")
+		defer log.Println("ReaderMessage end")
 		utils.ReaderMessage(handleChan, msgHandle, clientCtx)
 	}()
 	go func() {
-		defer fmt.Println("WriteMessage end")
+		defer log.Println("WriteMessage end")
 		utils.WriteMessage(writerChan, conn, clientCtx)
 	}()
 	go func() {
-		defer fmt.Println("HandleMessage end")
+		defer log.Println("HandleMessage end")
 		handleMessage(handleChan, clientCtx)
 	}()
 
 	registerMsg, err := makeRegisterMsg(Token)
 	if err != nil {
-		fmt.Println("注册报文创建失败")
+		log.Println("注册报文创建失败")
 		return
 	}
 	writerChan <- registerMsg
@@ -87,7 +87,7 @@ func startClient(stopChan chan bool) {
 
 	readMainWg.Wait()
 	clientCancel()
-	fmt.Println("client close")
+	log.Println("client close")
 }
 
 func clientMain() {
@@ -101,7 +101,7 @@ func clientMain() {
 			startClient(restartConnChan)
 		}()
 		wg.Wait()
-		fmt.Println("5秒后重连")
+		log.Println("5秒后重连")
 		time.Sleep(5 * time.Second)
 	}
 
